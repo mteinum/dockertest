@@ -1,0 +1,26 @@
+# docker test stack for rabbitmq
+
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+    - "15672:15672"
+    networks:
+      - webnet
+    healthcheck:
+            test: ["CMD-SHELL", "if rabbitmqctl status; then \nexit 0 \nfi \nexit 1"]
+            interval: 10s
+            retries: 5
+
+  nsb_receiver:
+    image: nsb_receiver
+    networks:
+      - webnet
+    depends_on:
+      - rabbitmq
+          #condition: service_healthy
+
+networks: 
+  webnet:
